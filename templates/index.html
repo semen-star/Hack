@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitkillers - Professional Pentest Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="matrix-bg min-h-screen">
+    <div class="container mx-auto p-4">
+        <!-- Header -->
+        <header class="mb-8 text-center fade-in">
+            <div class="flex items-center justify-center space-x-4 mb-4">
+                <i class="fas fa-skull-crossbones text-4xl text-red-500 pulse"></i>
+                <h1 class="text-5xl font-bold bitkillers-header">
+                    BITKILLERS
+                </h1>
+                <i class="fas fa-shield-alt text-4xl text-blue-400 pulse"></i>
+            </div>
+            <p class="text-gray-300 text-lg mb-2">Professional Penetration Testing Platform</p>
+            <p class="text-gray-400 text-sm">Advanced Security Assessment & Vulnerability Management</p>
+            <div class="flex justify-center space-x-6 mt-4 text-sm text-gray-400">
+                <span class="flex items-center space-x-1">
+                    <i class="fas fa-bug text-red-400"></i>
+                    <span>Black Box</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                    <i class="fas fa-user-secret text-yellow-400"></i>
+                    <span>Gray Box</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                    <i class="fas fa-user-shield text-green-400"></i>
+                    <span>White Box</span>
+                </span>
+                <span class="flex items-center space-x-1">
+                    <i class="fas fa-bolt text-blue-400"></i>
+                    <span>Real-time</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Stats Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 slide-up">
+            <div class="scan-card p-4 text-center border-l-4 border-green-500 glow-box">
+                <div class="text-2xl font-bold text-green-400 glow-text" id="totalScans">0</div>
+                <div class="text-gray-400 text-sm mt-1">Total Scans</div>
+                <div class="text-xs text-gray-500 mt-1">Completed</div>
+            </div>
+            <div class="scan-card p-4 text-center border-l-4 border-red-500 glow-box">
+                <div class="text-2xl font-bold text-red-400 glow-text" id="criticalVulns">0</div>
+                <div class="text-gray-400 text-sm mt-1">Critical</div>
+                <div class="text-xs text-gray-500 mt-1">Vulnerabilities</div>
+            </div>
+            <div class="scan-card p-4 text-center border-l-4 border-orange-500 glow-box">
+                <div class="text-2xl font-bold text-orange-400 glow-text" id="highVulns">0</div>
+                <div class="text-gray-400 text-sm mt-1">High Risk</div>
+                <div class="text-xs text-gray-500 mt-1">Vulnerabilities</div>
+            </div>
+            <div class="scan-card p-4 text-center border-l-4 border-blue-500 glow-box">
+                <div class="text-2xl font-bold text-blue-400 glow-text" id="servicesFound">0</div>
+                <div class="text-gray-400 text-sm mt-1">Services</div>
+                <div class="text-xs text-gray-500 mt-1">Discovered</div>
+            </div>
+        </div>
+
+        <!-- Scan Control -->
+        <div class="scan-card glow-box p-6 mb-6 slide-up">
+            <h2 class="text-2xl font-semibold mb-4 text-green-300">
+                <i class="fas fa-rocket mr-2"></i>Launch New Security Scan
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-gray-300">
+                        <i class="fas fa-bullseye mr-2"></i>Target Host
+                    </label>
+                    <input type="text" id="targetInput" placeholder="192.168.1.1 or example.com"
+                           class="form-input w-full" autocomplete="off">
+                    <div class="text-xs text-gray-400 mt-1">IP address, hostname or network range</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-gray-300">
+                        <i class="fas fa-cog mr-2"></i>Scan Mode
+                    </label>
+                    <select id="modeSelect" class="form-select w-full">
+                        <option value="black_box">🕵️ Black Box (No Access)</option>
+                        <option value="gray_box">👤 Gray Box (Limited Access)</option>
+                        <option value="white_box">🛡️ White Box (Full Access)</option>
+                    </select>
+                    <div class="text-xs text-gray-400 mt-1">Select scanning methodology</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" id="credentialsSection" style="display: none;">
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-gray-300">
+                        <i class="fas fa-user mr-2"></i>Username
+                    </label>
+                    <input type="text" id="loginInput" class="form-input w-full" autocomplete="off" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2 text-gray-300">
+                        <i class="fas fa-key mr-2"></i>Password
+                    </label>
+                    <input type="password" id="passwordInput" class="form-input w-full" autocomplete="off" placeholder="••••••••">
+                </div>
+            </div>
+            <button onclick="startScan()"
+                    class="btn-primary w-full md:w-auto px-8 py-4">
+                <i class="fas fa-play mr-2"></i> 🚀 Start Security Scan
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="hidden scan-card p-6 mb-6 slide-up">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">
+                <i class="fas fa-tachometer-alt mr-2"></i>Scan Progress
+            </h2>
+            <div class="space-y-4" id="progressContainer">
+                <div class="text-center text-gray-400 py-8" id="initialMessage">
+                    <i class="fas fa-sync-alt fa-spin text-2xl mb-2"></i><br>
+                    Waiting for scan to start...
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tabs -->
+        <div class="tab-container mb-6 slide-up">
+            <div class="border-b border-gray-700">
+                <nav class="flex -mb-px overflow-x-auto">
+                    <button onclick="showTab('vulnerabilities')"
+                            class="tab-button active flex-1 py-4 px-6 text-center whitespace-nowrap">
+                        <i class="fas fa-bug mr-2"></i> Vulnerabilities
+                        <span id="vulnCount" class="badge badge-critical ml-2">0</span>
+                    </button>
+                    <button onclick="showTab('services')"
+                            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+                        <i class="fas fa-server mr-2"></i> Services
+                        <span id="serviceCount" class="badge badge-low ml-2">0</span>
+                    </button>
+                    <button onclick="showTab('attack')"
+                            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+                        <i class="fas fa-crosshairs mr-2"></i> Attack Vectors
+                        <span id="vectorCount" class="badge badge-medium ml-2">0</span>
+                    </button>
+                    <button onclick="showTab('report')"
+                            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+                        <i class="fas fa-file-alt mr-2"></i> Report
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-6">
+                <!-- Vulnerabilities Tab -->
+                <div id="vulnerabilitiesTab" class="tab-content">
+                    <div id="vulnerabilitiesList" class="space-y-4">
+                        <div class="text-center text-gray-400 py-12">
+                            <i class="fas fa-search text-4xl mb-4"></i>
+                            <div class="text-xl mb-2">No Vulnerabilities Found</div>
+                            <div class="text-sm">Scan results will appear here after completion</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Tab -->
+                <div id="servicesTab" class="tab-content hidden">
+                    <div id="servicesList" class="space-y-4">
+                        <div class="text-center text-gray-400 py-12">
+                            <i class="fas fa-network-wired text-4xl mb-4"></i>
+                            <div class="text-xl mb-2">No Services Discovered</div>
+                            <div class="text-sm">Service information will appear here after reconnaissance</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attack Vectors Tab -->
+                <div id="attackTab" class="tab-content hidden">
+                    <div id="attackVectorsList" class="space-y-6">
+                        <div class="text-center text-gray-400 py-12">
+                            <i class="fas fa-target text-4xl mb-4"></i>
+                            <div class="text-xl mb-2">No Attack Vectors Built</div>
+                            <div class="text-sm">Attack vectors will be generated based on discovered vulnerabilities</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Tab -->
+                <div id="reportTab" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-green-300">Security Assessment Report</h3>
+                        <button onclick="downloadReport()" class="btn-primary px-4 py-2 text-sm">
+                            <i class="fas fa-download mr-2"></i> Download PDF
+                        </button>
+                    </div>
+                    <div id="reportContent" class="hacker-terminal max-h-96 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan History -->
+        <div class="scan-card p-6 slide-up">
+            <h2 class="text-2xl font-semibold mb-4 text-purple-300">
+                <i class="fas fa-history mr-2"></i>Scan History
+            </h2>
+            <div id="scanHistory" class="space-y-3">
+                <div class="text-center text-gray-400 py-8">
+                    <i class="fas fa-clock text-2xl mb-2"></i>
+                    <div class="text-xl mb-2">No Scan History</div>
+                    <div class="text-sm">Completed scans will appear here</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm slide-up">
+            <div class="border-t border-gray-700 pt-6">
+                <div class="flex items-center justify-center space-x-2 mb-2">
+                    <i class="fas fa-skull-crossbones text-red-400"></i>
+                    <p><strong>Bitkillers v1.0</strong> - Professional Pentest Platform</p>
+                    <i class="fas fa-shield-alt text-blue-400"></i>
+                </div>
+                <p class="text-xs">Powered by Python, Flask & Nmap | Advanced Security Assessment Tool</p>
+                <p class="text-xs mt-1">Hackathon ALPIX 2024 | Enterprise Grade Security Solutions</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <script>
+        // Tailwind Config for Custom Colors
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bit-green': '#10b981',
+                        'bit-red': '#ef4444',
+                        'bit-blue': '#3b82f6',
+                        'bit-purple': '#8b5cf6',
+                        'dark-bg': '#0f172a',
+                        'darker-bg': '#0a0f1c',
+                        'card-bg': '#1e293b'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'monospace'],
+                        'orbitron': ['Orbitron', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'slide-in': 'slide-in 0.5s ease-out',
+                        'typewriter': 'typewriter 3s steps(40) 1s 1 normal both'
+                    }
+                }
+            }
+        }
+
+        // Initialize mode selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const modeSelect = document.getElementById('modeSelect');
+            const credentialsSection = document.getElementById('credentialsSection');
+
+            modeSelect.addEventListener('change', function() {
+                if (this.value !== 'black_box') {
+                    credentialsSection.style.display = 'grid';
+                } else {
+                    credentialsSection.style.display = 'none';
+                }
+            });
+
+            // Add some demo data for better UX
+            document.getElementById('targetInput').value = '192.168.1.1';
+
+            // Initialize badge counts
+            updateBadgeCounts(0, 0, 0);
+        });
+
+        function updateBadgeCounts(vulns, services, vectors) {
+            document.getElementById('vulnCount').textContent = vulns;
+            document.getElementById('serviceCount').textContent = services;
+            document.getElementById('vectorCount').textContent = vectors;
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} transform transition-all duration-300`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas ${getNotificationIcon(type)} text-lg"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            container.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+
+            // Auto remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'success': 'fa-check-circle',
+                'error': 'fa-exclamation-circle',
+                'warning': 'fa-exclamation-triangle',
+                'info': 'fa-info-circle'
+            };
+            return icons[type] || 'fa-info-circle';
+        }
+
+        // Enhanced tab system
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Risk meter functionality
+        function updateRiskMeter(critical, high, medium, low) {
+            const total = critical + high + medium + low;
+            if (total === 0) return;
+
+            const riskLevel = critical > 0 ? 'critical' : high > 0 ? 'high' : medium > 0 ? 'medium' : 'low';
+            const riskPercentage = critical > 0 ? 100 : high > 0 ? 66 : medium > 0 ? 33 : 0;
+
+            // You can implement a visual risk meter here
+            console.log(`Risk Level: ${riskLevel}, Percentage: ${riskPercentage}%`);
+        }
+    </script>
+</body>
+</html>

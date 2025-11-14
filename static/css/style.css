@@ -1,0 +1,438 @@
+/* Bitkillers Custom Styles */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-green: #10b981;
+    --primary-red: #ef4444;
+    --primary-blue: #3b82f6;
+    --primary-purple: #8b5cf6;
+    --dark-bg: #0f172a;
+    --darker-bg: #0a0f1c;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 50%, #1e293b 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-primary);
+}
+
+/* Glow эффекты */
+.glow-text {
+    text-shadow: 0 0 10px currentColor;
+}
+
+.glow-box {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+.glow-box:hover {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+}
+
+/* Анимации */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+    }
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes typewriter {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Компоненты */
+.bitkillers-header {
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.scan-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    animation: slide-in 0.5s ease-out;
+}
+
+.scan-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-green);
+}
+
+.vulnerability-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #1a2332 100%);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.vulnerability-card:hover {
+    transform: translateX(5px);
+}
+
+.vulnerability-card.critical {
+    border-left-color: var(--primary-red);
+}
+
+.vulnerability-card.high {
+    border-left-color: #f59e0b;
+}
+
+.vulnerability-card.medium {
+    border-left-color: #eab308;
+}
+
+.vulnerability-card.low {
+    border-left-color: var(--primary-green);
+}
+
+/* Progress bars */
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Кнопки */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--primary-red), #dc2626);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+}
+
+/* Формы */
+.form-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-select {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-critical {
+    background: linear-gradient(135deg, var(--primary-red), #dc2626);
+    color: white;
+}
+
+.badge-high {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.badge-medium {
+    background: linear-gradient(135deg, #eab308, #ca8a04);
+    color: white;
+}
+
+.badge-low {
+    background: linear-gradient(135deg, var(--primary-green), #059669);
+    color: white;
+}
+
+/* Табы */
+.tab-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 16px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-button.active {
+    color: var(--primary-green);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+    border-radius: 3px 3px 0 0;
+}
+
+.tab-content {
+    animation: slide-in 0.3s ease-out;
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    z-index: 1000;
+    animation: slide-in 0.3s ease-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.notification.success {
+    background: linear-gradient(135deg, var(--primary-green), #059669);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, var(--primary-red), #dc2626);
+}
+
+.notification.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.notification.info {
+    background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
+}
+
+/* Спиннеры */
+.spinner {
+    border: 2px solid transparent;
+    border-top: 2px solid var(--primary-green);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Специальные эффекты для Bitkillers */
+.hacker-terminal {
+    background: #0a0a0a;
+    border: 1px solid var(--primary-green);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary-green);
+    overflow-x: auto;
+}
+
+.cyber-grid {
+    background-image:
+        linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.risk-meter {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+        var(--primary-green) 0%,
+        #eab308 33%,
+        #f59e0b 66%,
+        var(--primary-red) 100%);
+    position: relative;
+}
+
+.risk-indicator {
+    position: absolute;
+    top: -2px;
+    width: 4px;
+    height: 12px;
+    background: white;
+    border-radius: 2px;
+    transition: left 0.5s ease;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .scan-card {
+        margin-bottom: 16px;
+    }
+
+    .tab-button {
+        padding: 12px 16px;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary, .btn-danger {
+        padding: 10px 20px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Специальные классы для анимаций появления */
+.fade-in {
+    animation: slide-in 0.5s ease-out;
+}
+
+.slide-up {
+    animation: slide-in 0.5s ease-out;
+}
+
+.pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--card-bg);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+}
+
+/* Эффект матрицы для фона */
+.matrix-bg::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
