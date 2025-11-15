@@ -37,6 +37,12 @@ class ScanManager:
         self.active_jobs: Dict[str, ScanJob] = {}
         self.socketio = socketio
 
+    def _generate_report(self, job: ScanJob) -> Dict:
+        """Генерация отчета с использованием нового ReportGenerator"""
+        from .reporter import ReportGenerator
+        reporter = ReportGenerator()
+        return reporter.generate_comprehensive_report(job)
+
     def create_scan_job(self, target: str, mode: str, credentials: Dict = None) -> str:
         job_id = f"scan_{int(time.time())}_{len(self.active_jobs)}"
         scan_mode = ScanMode(mode)
