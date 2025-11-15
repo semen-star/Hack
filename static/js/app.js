@@ -143,6 +143,8 @@ function loadResults() {
             displayAttackVectors(data.results.attack_vectors || []);
             displayReport(data.results.report || {});
             updateStats(data.results);
+
+            updateRemediationCount((data.results.vulnerabilities || []).length);
         })
         .catch(error => {
             showNotification('Ошибка загрузки результатов: ' + error, 'error');
@@ -516,4 +518,83 @@ function displayVulnerabilities(vulns) {
         document.getElementById('serviceCount').textContent,
         document.getElementById('vectorCount').textContent
     );
+}
+
+// ==================== REMEDIATION FUNCTIONS ====================
+
+function generateRemediationReport() {
+    if (!currentJobId) {
+        showNotification('Please complete a scan first', 'warning');
+        return;
+    }
+
+    showNotification('Generating remediation report...', 'info');
+    
+    fetch(`/api/remediation/generate/${currentJobId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                showNotification('Error: ' + data.error, 'error');
+                return;
+            }
+            displayRemediationGuide(data.report);
+            showNotification('Remediation report generated successfully!', 'success');
+        })
+        .catch(error => {
+            showNotification('Error generating report: ' + error, 'error');
+        });
+}
+
+function downloadRemediationReport() {
+    if (!currentJobId) {
+        showNotification('Please complete a scan first', 'warning');
+        return;
+    }
+
+    window.open(`/api/remediation/download/${currentJobId}`, '_blank');
+    showNotification('Downloading remediation report...', 'info');
+}
+
+function displayRemediationGuide(report) {
+    const container = document.getElementById('remediationContent');
+    
+    if (!report) {
+        container.innerHTML = `
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                <div>No remediation data available</div>
+            </div>
+        `;
+        return;
+    }
+
+    // Форматируем отчет с подсветкой
+    const formattedReport = report.split('\n').map(line => {
+        if (line.includes('🚨') || line.includes('КРИТИЧЕСКИЕ')) {
+            return `<div class="bg-red-900 border-l-4 border-red-500 p-4 font-bold text-red-200">${line}</div>`;
+        } else if (line.includes('🟡') || line.includes('ВЫСОКИЕ')) {
+            return `<div class="bg-orange-900 border-l-4 border-orange-500 p-4 font-bold text-orange-200">${line}</div>`;
+        } else if (line.includes('🔧') || line.includes('РЕКОМЕНДАЦИИ')) {
+            return `<div class="bg-blue-900 border-l-4 border-blue-500 p-4 font-bold text-blue-200">${line}</div>`;
+        } else if (line.startsWith('=') || line.startsWith('—')) {
+            return `<div class="border-b border-gray-600 my-4"></div>`;
+        } else if (line.startsWith('●') || line.startsWith('•')) {
+            return `<div class="ml-4 my-1 flex items-start">
+                <span class="text-green-400 mr-2">•</span>
+                <span class="text-gray-300">${line.substring(1)}</span>
+            </div>`;
+        } else if (line.trim() === '') {
+            return `<div class="h-3"></div>`;
+        } else {
+            return `<div class="text-gray-300 my-1">${line}</div>`;
+        }
+    }).join('');
+
+    container.innerHTML = `
+        <div class="hacker-terminal p-6 max-h-96 overflow-y-auto">
+            <div class="font-mono text-sm leading-relaxed">
+                ${formattedReport}
+            </div>
+        </div>
+    `;
 }

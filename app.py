@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from core.remediation import RemediationAdvisor
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_socketio import SocketIO
 from core.scanner import ScanManager
@@ -14,7 +15,7 @@ socketio = SocketIO(app, async_mode='threading')
 # ==================== ИНИЦИАЛИЗАЦИЯ ====================
 
 scan_manager = ScanManager(socketio)
-
+remediation_advisor = RemediationAdvisor()
 
 # ==================== FLASK ROUTES ====================
 
@@ -90,6 +91,30 @@ def download_report(job_id):
 
     return send_file(filepath, as_attachment=True, download_name=filename)
 
+@app.route('/api/remediation/generate/<job_id>')
+def generate_remediation_report(job_id):
+    job = scan_manager.get_job(job_id)
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+    
+    vulnerabilities = job.results.get('vulnerabilities', [])
+    report = remediation_advisor.generate_remediation_report(vulnerabilities)
+    
+    return jsonify({
+        'report': report,
+        'vulnerabilities_count': len(vulnerabilities)
+    })
+
+@app.route('/api/remediation/download/<job_id>')
+def download_remediation_report(job_id):
+    job = scan_manager.get_job(job_id)
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+    
+    vulnerabilities = job.results.get('vulnerabilities', [])
+    filename = remediation_advisor.save_remediation_report(vulnerabilities)
+    
+    return send_file(filename, as_attachment=True, download_name=filename)
 
 # ==================== WEB SOCKET EVENTS ====================
 
@@ -109,10 +134,15 @@ if __name__ == '__main__':
     print("🚀 Bitkillers Pentest Platform запускается...")
     print("📍 Доступно по адресу: http://localhost:5000")
     print("⚡ Версия: 1.0 | Хакатон АЛЬПИКС")
-
+    
     # Создаем необходимые директории
     os.makedirs('static/css', exist_ok=True)
     os.makedirs('static/js', exist_ok=True)
     os.makedirs('templates', exist_ok=True)
-
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    
+    # Запускаем с разрешением использовать Werkzeug в production-like среде
+    socketio.run(app, 
+                 host='0.0.0.0', 
+                 port=5000, 
+                 debug=True, 
+                 allow_unsafe_werkzeug=True)

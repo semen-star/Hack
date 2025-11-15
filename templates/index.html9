@@ -144,11 +144,6 @@
                         <i class="fas fa-crosshairs mr-2"></i> Attack Vectors
                         <span id="vectorCount" class="badge badge-medium ml-2">0</span>
                     </button>
-		    <button onclick="showTab('remediation')"
-		            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
-       			 <i class="fas fa-first-aid mr-2"></i> Remediation
-      			 <span id="remediationCount" class="badge badge-high ml-2">0</span>
-		    </button>
                     <button onclick="showTab('report')"
                             class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
                         <i class="fas fa-file-alt mr-2"></i> Report
@@ -189,9 +184,36 @@
                         </div>
                     </div>
                 </div>
-		
-	  <!-- Report Tab -->
-		 <div id="reportTab" class="tab-content hidden">
+		<!-- В секции табов найди nav и добавь новую кнопку -->
+<nav class="flex -mb-px overflow-x-auto">
+    <button onclick="showTab('vulnerabilities')" 
+            class="tab-button active flex-1 py-4 px-6 text-center whitespace-nowrap">
+        <i class="fas fa-bug mr-2"></i> Vulnerabilities
+        <span id="vulnCount" class="badge badge-critical ml-2">0</span>
+    </button>
+    <button onclick="showTab('services')" 
+            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+        <i class="fas fa-server mr-2"></i> Services
+        <span id="serviceCount" class="badge badge-low ml-2">0</span>
+    </button>
+    <button onclick="showTab('attack')" 
+            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+        <i class="fas fa-crosshairs mr-2"></i> Attack Vectors
+        <span id="vectorCount" class="badge badge-medium ml-2">0</span>
+    </button>
+    <!-- НОВАЯ КНОПКА - ДОБАВЬ ЭТУ СТРОКУ -->
+    <button onclick="showTab('remediation')" 
+            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+        <i class="fas fa-first-aid mr-2"></i> Remediation
+        <span id="remediationCount" class="badge badge-high ml-2">0</span>
+    </button>
+    <button onclick="showTab('report')" 
+            class="tab-button flex-1 py-4 px-6 text-center whitespace-nowrap">
+        <i class="fas fa-file-alt mr-2"></i> Report
+    </button>
+</nav>
+                <!-- Report Tab -->
+                <div id="reportTab" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-green-300">Security Assessment Report</h3>
                         <button onclick="downloadReport()" class="btn-primary px-4 py-2 text-sm">
@@ -202,32 +224,6 @@
                 </div>
             </div>
         </div>
-	<!-- После attackTab и перед reportTab добавь: -->
-
-	<!-- Remediation Tab -->
-		<div id="remediationTab" class="tab-content hidden">
-		    <div class="flex justify-between items-center mb-4">
-	        	<h3 class="text-lg font-semibold text-green-300">
-		            <i class="fas fa-first-aid mr-2"></i>Remediation Guide
-		        </h3>
-		        <div class="space-x-2">
-		            <button onclick="generateRemediationReport()" class="btn-primary px-4 py-2 text-sm">
-		                <i class="fas fa-sync-alt mr-2"></i> Generate Report
-		            </button>
-		            <button onclick="downloadRemediationReport()" class="btn-primary px-4 py-2 text-sm">
-		                <i class="fas fa-download mr-2"></i> Download TXT
-		            </button>
-		        </div>
-		    </div>
-    
-		    <div id="remediationContent" class="space-y-6">
-		        <div class="text-center text-gray-400 py-12">
-		            <i class="fas fa-first-aid text-4xl mb-4"></i>
-		            <div class="text-xl mb-2">Remediation Guide</div>
-		            <div class="text-sm">Complete vulnerability remediation instructions will appear here</div>
-		        </div>
-		    </div>
-		</div>
 
         <!-- Scan History -->
         <div class="scan-card p-6 slide-up">
